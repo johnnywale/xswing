@@ -1,8 +1,8 @@
-package com.jovx.swing;
+package com.jovx.swing.model;
 
 import java.lang.reflect.Method;
 
-public class ColumnConfig {
+public class ModelConfig {
 	private String header;
 	private Method getMethod;
 	private Method setMethod;

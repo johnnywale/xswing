@@ -1,4 +1,4 @@
-package com.jovx.swing;
+package com.jovx.swing.model;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DtoField {
+public @interface ModelField {
 	public abstract String fieldName() default "";
 
 	public abstract String viewName() default "";

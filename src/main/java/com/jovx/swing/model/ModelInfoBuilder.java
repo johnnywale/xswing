@@ -1,4 +1,4 @@
-package com.jovx.swing;
+package com.jovx.swing.model;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ModelInfoBuilder<T> {
 
-	private List<ColumnConfig> columnConfigs = new ArrayList<ColumnConfig>();
+	private List<ModelConfig> columnConfigs = new ArrayList<ModelConfig>();
 
 	private Class<T> modelType;
 
@@ -42,7 +42,7 @@ public class ModelInfoBuilder<T> {
 			System.arraycopy(fm, 0, result, methods.length, fm.length);
 		}
 		for (Field field : methods) {
-			ColumnConfig columnConfig = new ColumnConfig();
+			ModelConfig columnConfig = new ModelConfig();
 			columnConfigs.add(columnConfig);
 			String name = field.getName();
 			columnConfig.setFieldName(name);
@@ -54,8 +54,8 @@ public class ModelInfoBuilder<T> {
 
 			try {
 				Method method = modelType.getDeclaredMethod(methodName);
-				if (method.isAnnotationPresent(DtoField.class)) {
-					DtoField dtoField = method.getAnnotation(DtoField.class);
+				if (method.isAnnotationPresent(ModelField.class)) {
+					ModelField dtoField = method.getAnnotation(ModelField.class);
 					String backEndField = dtoField.fieldName();
 					if (dtoField.fieldName().length() > 0) {
 						columnConfig.setSort(backEndField);

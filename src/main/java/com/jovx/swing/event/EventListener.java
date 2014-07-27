@@ -1,4 +1,4 @@
-package com.jovx.swing;
+package com.jovx.swing.event;
 
 public interface EventListener<T> {
 

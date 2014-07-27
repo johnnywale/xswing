@@ -1,4 +1,4 @@
-package com.jovx.swing;
+package com.jovx.swing.event;
 
 import java.util.ArrayList;
 import java.util.HashMap;
