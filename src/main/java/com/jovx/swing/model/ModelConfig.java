@@ -20,7 +20,7 @@ public class ModelConfig {
 	}
 
 	public Method getGetMethod() {
-		return getMethod;
+		return getMethod; 
 	}
 
 	public void setGetMethod(Method getMethod) {
