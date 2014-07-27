@@ -1,9 +1,8 @@
-package com.stee.ims.monitoring.anno;
+package com.jovx.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Panel;
-import java.util.UUID;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;

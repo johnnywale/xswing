@@ -1,4 +1,4 @@
-package com.stee.ims.monitoring.anno;
+package com.jovx.swing;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

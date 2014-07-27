@@ -1,4 +1,4 @@
-package com.stee.ims.monitoring.anno;
+package com.jovx.swing;
 
 public interface ModelPropertyListener<T> {
 
