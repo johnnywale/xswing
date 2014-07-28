@@ -12,16 +12,22 @@ import com.jovx.swing.event.EventService;
 import com.jovx.swing.event.ModelAddEvent;
 import com.jovx.swing.event.ModelDeleteEvent;
 import com.jovx.swing.event.ModelFieldValueChangedEvent;
+import com.jovx.swing.factory.XSwingFactory;
 import com.jovx.swing.model.ModelInfoBuilder;
 
 public class BaseTableModel<T> extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	private List<T> datas = new ArrayList<T>();
 	private ModelInfoBuilder<T> modelInfoBuilder;
-	private EventService eventService = new EventService();
+	private EventService eventService = XSwingFactory.getInstance()
+			.findDefaultEventService();
+
+	public ModelInfoBuilder<T> getModelInfoBuilder() {
+		return modelInfoBuilder;
+	}
 
 	public <X extends EventListener> void add(Class<X> t, EventListener<X> l) {
-		eventService.put(t, l);
+		eventService.register(t, l);
 	}
 
 	public void addNewEmpty() {
@@ -44,6 +50,7 @@ public class BaseTableModel<T> extends AbstractTableModel {
 			datas.add(t);
 			added.add(t);
 		}
+		addEvent.setInstanceClass(getClassInstance());
 		addEvent.setCurrentList(datas);
 		fireEvent(addEvent);
 		this.fireTableDataChanged();
@@ -71,6 +78,10 @@ public class BaseTableModel<T> extends AbstractTableModel {
 		this.fireTableDataChanged();
 	}
 
+	public Class<T> getClassInstance() {
+		return modelInfoBuilder.getModelType();
+	}
+
 	@Override
 	public String getColumnName(int i) {
 		return modelInfoBuilder.getHeader(i);
@@ -84,6 +95,7 @@ public class BaseTableModel<T> extends AbstractTableModel {
 			modelInfoBuilder.getSetMethod(j).invoke(datas.get(i), obj);
 			ModelFieldValueChangedEvent<T> changedEvent = new ModelFieldValueChangedEvent<T>();
 			changedEvent.setBefore(before);
+			changedEvent.setInstanceClass(getClassInstance());
 			changedEvent.setModel(datas.get(i));
 			changedEvent.setFieldName(modelInfoBuilder.getFieldName(j));
 			changedEvent.setNow(obj);
@@ -155,6 +167,7 @@ public class BaseTableModel<T> extends AbstractTableModel {
 		ModelDeleteEvent<T> modelDeleteEvent = new ModelDeleteEvent<T>();
 		modelDeleteEvent.setChangedList(removeList);
 		modelDeleteEvent.setOriginalList(ori);
+		modelDeleteEvent.setInstanceClass(getClassInstance());
 		modelDeleteEvent.setCurrentList(datas);
 		fireEvent(modelDeleteEvent);
 		this.fireTableDataChanged();
@@ -163,6 +176,10 @@ public class BaseTableModel<T> extends AbstractTableModel {
 
 	public void fireEvent(Object o) {
 		eventService.fireEvent(o);
+	}
+
+	public T getData(int i) {
+		return datas.get(i);
 	}
 
 }

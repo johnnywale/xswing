@@ -1,8 +1,19 @@
 package com.jovx.swing;
 
+import java.awt.Color;
+
 public class Test {
 	private String name;
 	private String gggg;
+	private Color color;
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
 
 	public String getName() {
 		return name;

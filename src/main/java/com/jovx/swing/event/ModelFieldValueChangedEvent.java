@@ -1,10 +1,19 @@
 package com.jovx.swing.event;
 
-public class ModelFieldValueChangedEvent<T> {
+public class ModelFieldValueChangedEvent<T> implements ModelListener<T> {
 	private T model;
 	private Object now;
 	private Object before;
 	private String fieldName;
+	private Class<T> instanceClass;
+
+	public Class<T> getInstanceClass() {
+		return instanceClass;
+	}
+
+	public void setInstanceClass(Class<T> instanceClass) {
+		this.instanceClass = instanceClass;
+	}
 
 	public T getModel() {
 		return model;

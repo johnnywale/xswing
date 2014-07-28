@@ -8,7 +8,6 @@ import java.util.List;
 public class ModelInfoBuilder<T> {
 
 	private List<ModelConfig> columnConfigs = new ArrayList<ModelConfig>();
-
 	private Class<T> modelType;
 
 	public Class<T> getModelType() {
@@ -55,7 +54,8 @@ public class ModelInfoBuilder<T> {
 			try {
 				Method method = modelType.getDeclaredMethod(methodName);
 				if (method.isAnnotationPresent(ModelField.class)) {
-					ModelField dtoField = method.getAnnotation(ModelField.class);
+					ModelField dtoField = method
+							.getAnnotation(ModelField.class);
 					String backEndField = dtoField.fieldName();
 					if (dtoField.fieldName().length() > 0) {
 						columnConfig.setSort(backEndField);
@@ -67,7 +67,8 @@ public class ModelInfoBuilder<T> {
 				} else {
 					columnConfig.setEditable(true);
 					columnConfig.setSort(name);
-					columnConfig.setRenderClazz(Object.class);
+					System.out.println("clazz " + field.getType());
+					columnConfig.setRenderClazz(field.getType());
 				}
 				columnConfig.setGetMethod(method);
 

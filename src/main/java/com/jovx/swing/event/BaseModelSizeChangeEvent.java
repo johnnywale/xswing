@@ -2,10 +2,11 @@ package com.jovx.swing.event;
 
 import java.util.List;
 
-public class BaseModelSizeChangeEvent<T> {
+public class BaseModelSizeChangeEvent<T> implements ModelListener<T> {
 	private List<T> originalList;
 	private List<T> changedList;
 	private List<T> currentList;
+	private Class<T> instanceClass;
 
 	public List<T> getChangedList() {
 		return changedList;
@@ -36,6 +37,17 @@ public class BaseModelSizeChangeEvent<T> {
 		return getClass().getSimpleName() + " [originalList="
 				+ originalList.size() + ", changedList=" + changedList.size()
 				+ ", currentList=" + currentList.size() + "]";
+	}
+
+	@Override
+	public Class<T> getInstanceClass() {
+
+		return instanceClass;
+	}
+
+	public void setInstanceClass(Class<T> instanceClass) {
+		this.instanceClass = instanceClass;
+
 	}
 
 }
