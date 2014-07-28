@@ -10,6 +10,10 @@ public class ModelInfoBuilder<T> {
 	private List<ModelConfig> columnConfigs = new ArrayList<ModelConfig>();
 	private Class<T> modelType;
 
+	public List<ModelConfig> getColumnConfigs() {
+		return columnConfigs;
+	}
+
 	public Class<T> getModelType() {
 		return modelType;
 	}
