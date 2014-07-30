@@ -48,25 +48,27 @@ public class BaseTableModel<T> extends AbstractTableModel {
 	}
 
 	public void add(T... ts) {
+		List<T> added = new ArrayList<T>();
+		for (T t : ts) {
+			added.add(t);
+		}
+		addDatas(added);
+	}
+
+	public void addDatas(List<T> l) {
 		ModelAddEvent<T> addEvent = new ModelAddEvent<T>();
 		List<T> ori = new ArrayList<T>();
-		List<T> added = new ArrayList<T>();
-		addEvent.setChangedList(added);
+		addEvent.setChangedList(l);
 		addEvent.setOriginalList(ori);
 		ori.addAll(datas);
-		for (T t : ts) {
+		for (T t : l) {
 			datas.add(t);
-			added.add(t);
 		}
 		addEvent.setInstanceClass(getClassInstance());
 		addEvent.setCurrentList(datas);
 		fireEvent(addEvent);
 		this.fireTableDataChanged();
-	}
 
-	public void addDatas(List<T> l) {
-		datas.addAll(l);
-		this.fireTableDataChanged();
 	}
 
 	public String getSortField(int i) {

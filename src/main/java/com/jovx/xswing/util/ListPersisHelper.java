@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jdesktop.swingx.JXTable;
+
 @XmlRootElement
 public class ListPersisHelper<T> {
 	private Class<T> clazz;
