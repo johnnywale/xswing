@@ -22,6 +22,10 @@ public class BaseTableModel<T> extends AbstractTableModel {
 	private EventService eventService = XSwingFactory.getInstance()
 			.findDefaultEventService();
 
+	public EventService getEventService() {
+		return eventService;
+	}
+
 	public List<T> getDatas() {
 		return datas;
 	}
@@ -30,7 +34,7 @@ public class BaseTableModel<T> extends AbstractTableModel {
 		return modelInfoBuilder;
 	}
 
-	public <X extends EventListener> void addEventListener(Class<X> t, EventListener<X> l) {
+	public <X> void addEventListener(Class<X> t, EventListener<X> l) {
 		eventService.register(t, l);
 	}
 

@@ -33,13 +33,17 @@ public class EventService extends HashMap<Class, List<EventListener>> {
 
 	}
 
+	public <T> void registerWeak(Class<T> clazz, EventListener<T> eventListener) {
+		register(clazz, new WeakEventListener<T>(eventListener));
+	}
+
 	public <T> void register(Class<T> clazz, EventListener<T> eventListener) {
 		List<EventListener> x = super.get(clazz);
 		if (x == null) {
 			x = new ArrayList<EventListener>();
 			super.put(clazz, x);
 		}
-		x.add(new WeakEventListener<T>(eventListener));
+		x.add(eventListener);
 	}
 
 }
