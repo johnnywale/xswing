@@ -3,6 +3,7 @@ package com.jovx.xswing.persis;
 import com.jovx.xswing.event.ModelAddEvent;
 import com.jovx.xswing.event.ModelDeleteEvent;
 import com.jovx.xswing.event.ModelFieldValueChangedEvent;
+import com.jovx.xswing.event.ModelFullUpdateEvent;
 
 public class DefaultPersisEventListener implements PersisEventListener {
 
@@ -22,6 +23,12 @@ public class DefaultPersisEventListener implements PersisEventListener {
 	public <T> void onModelFieldValueChangedEvent(
 			ModelFieldValueChangedEvent<T> modelFieldValueChangedEvent) {
 		System.out.println("onModelFieldValueChangedEvent");
+
+	}
+
+	@Override
+	public <T> void onModelFullUpdateEvent(ModelFullUpdateEvent<T> o) {
+		System.out.println("onModelFullUpdateEvent");
 
 	}
 

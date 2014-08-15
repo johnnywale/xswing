@@ -14,5 +14,7 @@ public @interface ModelField {
 
 	public abstract boolean editable() default true;
 
+	public abstract boolean ignore() default false;
+
 	public abstract Class renderClass() default Object.class;
 }

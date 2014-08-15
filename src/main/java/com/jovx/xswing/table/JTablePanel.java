@@ -23,6 +23,14 @@ public class JTablePanel<T> extends JPanel {
 	protected JPopupMenu jPopupMenu;
 	private JTable jTable;
 
+	public BaseTableModel<T> getBaseTableModel() {
+		return baseTableModel;
+	}
+
+	public JPopupMenu getjPopupMenu() {
+		return jPopupMenu;
+	}
+
 	public JTable getjTable() {
 		return jTable;
 	}

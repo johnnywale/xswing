@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.jovx.xswing.event.EventListener;
@@ -12,6 +14,7 @@ import com.jovx.xswing.event.EventService;
 import com.jovx.xswing.event.ModelAddEvent;
 import com.jovx.xswing.event.ModelDeleteEvent;
 import com.jovx.xswing.event.ModelFieldValueChangedEvent;
+import com.jovx.xswing.event.ModelFullUpdateEvent;
 import com.jovx.xswing.persis.PersisEventListener;
 import com.jovx.xswing.util.JAXBXMLHandler;
 
@@ -56,6 +59,28 @@ public class XSwingFactory {
 				"xswing.xml")));
 	}
 
+	public static <T> void simpleAdd(T t) {
+		ModelAddEvent<T> addEvent = new ModelAddEvent<T>();
+		List<T> newList = new ArrayList<T>();
+		newList.add(t);
+		addEvent.setChangedList(newList);
+		addEvent.setOriginalList(new ArrayList<T>());
+		addEvent.setInstanceClass((Class<T>) t.getClass());
+		addEvent.setCurrentList(newList);
+		getInstance().findDefaultEventService().fireEvent(addEvent);
+	}
+
+	public static <T> void simpleModify(T t) {
+		ModelFullUpdateEvent<T> addEvent = new ModelFullUpdateEvent<T>();
+		List<T> newList = new ArrayList<T>();
+		newList.add(t);
+		addEvent.setChangedList(newList);
+		addEvent.setOriginalList(new ArrayList<T>());
+		addEvent.setInstanceClass((Class<T>) t.getClass());
+		addEvent.setCurrentList(newList);
+		getInstance().findDefaultEventService().fireEvent(addEvent);
+	}
+
 	public void initInstance(InputStream inputStream) {
 		try {
 			FactoryConfig factoryConfig = JAXBXMLHandler.unmarshal(inputStream,
@@ -97,9 +122,29 @@ public class XSwingFactory {
 						}
 
 					});
+			defaultEventService.register(ModelFullUpdateEvent.class,
+					new EventListener<ModelFullUpdateEvent>() {
+
+						@Override
+						public void onEvent(ModelFullUpdateEvent o) {
+							persisEventListener.onModelFullUpdateEvent(o);
+
+						}
+
+					});
 
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static <T> ModelDeleteEvent<T> getSimpleDeleteEvent(T x) {
+
+		ModelDeleteEvent<T> modelDeleteEvent = new ModelDeleteEvent<T>();
+		modelDeleteEvent.setInstanceClass((Class<T>) x.getClass());
+		List<T> missionCells = new ArrayList<T>();
+		missionCells.add((T) x);
+		modelDeleteEvent.setChangedList(missionCells);
+		return modelDeleteEvent;
 	}
 }

@@ -46,7 +46,7 @@ public class ModelInfoBuilder<T> {
 		}
 		for (Field field : methods) {
 			ModelConfig columnConfig = new ModelConfig();
-			columnConfigs.add(columnConfig);
+
 			String name = field.getName();
 			columnConfig.setFieldName(name);
 			String upperName = Character.toUpperCase(name.charAt(0))
@@ -60,6 +60,10 @@ public class ModelInfoBuilder<T> {
 				if (method.isAnnotationPresent(ModelField.class)) {
 					ModelField dtoField = method
 							.getAnnotation(ModelField.class);
+					if (dtoField.ignore()) {
+						continue;
+					}
+
 					String backEndField = dtoField.fieldName();
 					if (dtoField.fieldName().length() > 0) {
 						columnConfig.setSort(backEndField);
@@ -82,6 +86,7 @@ public class ModelInfoBuilder<T> {
 						columnConfig.setSetMethod(m);
 					}
 				}
+				columnConfigs.add(columnConfig);
 
 			} catch (Throwable e) {
 
