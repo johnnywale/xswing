@@ -3,7 +3,7 @@
 
 	<groupId>com.jovx</groupId>
 	<artifactId>xswing</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.7</version>
 	<packaging>jar</packaging>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
