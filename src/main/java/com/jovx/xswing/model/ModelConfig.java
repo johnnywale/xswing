@@ -15,6 +15,14 @@ public class ModelConfig {
 		return header;
 	}
 
+	public Object getValue(Object instance) {
+		try {
+			return getMethod.invoke(instance, new Object[] {});
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public void setHeader(String header) {
 		this.header = header;
 	}

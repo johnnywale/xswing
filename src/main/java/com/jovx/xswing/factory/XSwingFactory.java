@@ -28,7 +28,7 @@ public class XSwingFactory {
 
 	public EventService findDefaultEventService() {
 		EventService eventService = findEventService(DEFAULT);
-		System.out.println(eventService);
+		// System.out.println(eventService);
 		return eventService;
 	}
 

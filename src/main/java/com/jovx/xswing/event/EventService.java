@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.jovx.xswing.exception.GcException;
 
-public class EventService extends HashMap<Class, List<EventListener>> {
+public class EventService extends ConcurrentHashMap<Class, List<EventListener>> {
 
 	public void fireEvent(Object o) {
+
 		List<EventListener> eventListeners = new ArrayList<EventListener>();
 		Set<Class> classes = this.keySet();
 		for (Class clazz : classes) {

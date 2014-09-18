@@ -11,7 +11,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jdesktop.swingx.JXTable;
-import org.pushingpixels.substance.api.skin.SubstanceChallengerDeepLookAndFeel;
 
 import com.jovx.xswing.factory.XSwingFactory;
 import com.jovx.xswing.log.SimpleLog;
@@ -55,17 +54,7 @@ public class Examples extends JFrame {
 					try {
 						UIManager
 								.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceTwilightLookAndFeel");
-					} catch (ClassNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InstantiationException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IllegalAccessException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (UnsupportedLookAndFeelException e1) {
-						// TODO Auto-generated catch block
+					} catch (Throwable e1) { // TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					Examples e = new Examples();

@@ -1,6 +1,7 @@
 package com.jovx.xswing.model;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,23 @@ public class ModelInfoBuilder<T> {
 
 	private List<ModelConfig> columnConfigs = new ArrayList<ModelConfig>();
 	private Class<T> modelType;
+
+	public void invokeSet(String field, Object value, T instance) {
+		try {
+			getModelConfigByName(field).getSetMethod().invoke(instance, value);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	public ModelConfig getModelConfigByName(String name) {
+		for (ModelConfig modelConfig : columnConfigs) {
+			if (modelConfig.getFieldName().equals(name)) {
+				return modelConfig;
+			}
+		}
+		throw new RuntimeException("Fail to get config by field " + name);
+	}
 
 	public List<ModelConfig> getColumnConfigs() {
 		return columnConfigs;
@@ -49,8 +67,22 @@ public class ModelInfoBuilder<T> {
 
 			String name = field.getName();
 			columnConfig.setFieldName(name);
-			String upperName = Character.toUpperCase(name.charAt(0))
-					+ name.substring(1);
+			String upperName;
+
+			if (name.length() > 1) {
+
+				if (Character.isLowerCase(name.charAt(0))
+						&& !Character.isLowerCase(name.charAt(1))) {
+					upperName = name;
+				} else {
+					upperName = Character.toUpperCase(name.charAt(0))
+							+ name.substring(1);
+
+				}
+			} else {
+				upperName = name.toUpperCase();
+			}
+
 			String methodName = "get" + upperName;
 			String setName = "set" + upperName;
 			columnConfig.setHeader(addBetweenUpperCase(upperName, " "));
@@ -75,7 +107,6 @@ public class ModelInfoBuilder<T> {
 				} else {
 					columnConfig.setEditable(true);
 					columnConfig.setSort(name);
-					System.out.println("clazz " + field.getType());
 					columnConfig.setRenderClazz(field.getType());
 				}
 				columnConfig.setGetMethod(method);

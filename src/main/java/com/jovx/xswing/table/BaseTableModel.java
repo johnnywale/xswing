@@ -55,6 +55,13 @@ public class BaseTableModel<T> extends AbstractTableModel {
 		addDatas(added);
 	}
 
+	public void addNoFire(T... ts) {
+		for (T t : ts) {
+			datas.add(t);
+		}
+		this.fireTableDataChanged();
+	}
+
 	public void addDatas(List<T> l) {
 		ModelAddEvent<T> addEvent = new ModelAddEvent<T>();
 		List<T> ori = new ArrayList<T>();
