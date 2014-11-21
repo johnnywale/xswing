@@ -104,13 +104,14 @@ public class ModelInfoBuilder<T> {
 					}
 					columnConfig.setRenderClazz(dtoField.renderClass());
 					columnConfig.setEditable(dtoField.editable());
+					columnConfig.setSortable(dtoField.sortable());
+
 				} else {
 					columnConfig.setEditable(true);
 					columnConfig.setSort(name);
 					columnConfig.setRenderClazz(field.getType());
 				}
 				columnConfig.setGetMethod(method);
-
 				Method[] mmm = modelType.getDeclaredMethods();
 				for (Method m : mmm) {
 					if (m.getName().equals(setName)) {

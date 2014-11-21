@@ -10,6 +10,15 @@ public class ModelConfig {
 	private String sort;
 	private Class renderClazz;
 	private boolean editable = false;
+	private boolean sortable = true;
+
+	public boolean isSortable() {
+		return sortable;
+	}
+
+	public void setSortable(boolean sortable) {
+		this.sortable = sortable;
+	}
 
 	public String getHeader() {
 		return header;

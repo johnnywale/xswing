@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -13,10 +15,15 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.jovx.xswing.frame.ModeFrame;
 import com.jovx.xswing.model.EditorStore;
+import com.jovx.xswing.model.ModelConfig;
+import com.jovx.xswing.model.ModelInfoBuilder;
 
 public class JTablePanel<T> extends JPanel {
 	private BaseTableModel<T> baseTableModel;
@@ -62,6 +69,19 @@ public class JTablePanel<T> extends JPanel {
 		for (Class key : EditorStore.maps.keySet()) {
 			jTable.setDefaultEditor(key, EditorStore.maps.get(key));
 		}
+
+		TableRowSorter sorter = new TableRowSorter(baseTableModel);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+
+		ModelInfoBuilder<T> xx = baseTableModel.getModelInfoBuilder();
+		List<ModelConfig> configs = xx.getColumnConfigs();
+		for (int i = 0; i < configs.size(); i++) {
+			if (configs.get(i).isEditable()) {
+				sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
+			}
+		}
+		sorter.setSortKeys(sortKeys);
+		jTable.setRowSorter(sorter);
 
 		JScrollPane jScrollPane = new JScrollPane(jTable);
 		add(jScrollPane, BorderLayout.CENTER);
