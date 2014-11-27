@@ -34,7 +34,19 @@ public class KeyValueLayout implements LayoutManager, ActionListener,
 				}
 
 			}
-			textField.addKeyListener(this);
+			KeyListener[] xx = textField.getKeyListeners();
+			boolean has = false;
+			if (xx == null) {
+				has = true;
+			}
+			for (KeyListener keyListener : xx) {
+				if (keyListener.equals(this)) {
+					has = true;
+				}
+			}
+			if (!has) {
+				textField.addKeyListener(this);
+			}
 		}
 
 	}
@@ -91,7 +103,8 @@ public class KeyValueLayout implements LayoutManager, ActionListener,
 					+ xInset * 2);
 		}
 		height += insets.bottom;
-		return new Dimension(width, height);
+		Dimension minSize = new Dimension(width + 50, height);
+		return minSize;
 	}
 
 	public Dimension preferredLayoutSize(Container c) {

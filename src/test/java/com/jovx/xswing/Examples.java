@@ -12,10 +12,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jdesktop.swingx.JXTable;
 
+import com.jovx.xswing.config.SimpleFactoryConfig;
+import com.jovx.xswing.config.IFactoryConfig;
 import com.jovx.xswing.factory.XSwingFactory;
 import com.jovx.xswing.log.SimpleLog;
 import com.jovx.xswing.table.JTablePanel;
 import com.jovx.xswing.table.TableConfig;
+import com.jovx.xswing.util.JAXBXMLHandler;
 
 public class Examples extends JFrame {
 	@Override
@@ -24,10 +27,13 @@ public class Examples extends JFrame {
 		return new Dimension(100, 800);
 	}
 
-	public Examples() throws FileNotFoundException {
+	public Examples() throws Throwable {
 
-		XSwingFactory swingFactory = XSwingFactory.getInstance();
-		swingFactory.initInstance(new FileInputStream(new File("xswing.xml")));
+		IFactoryConfig factoryConfig = JAXBXMLHandler.unmarshal(
+				new FileInputStream(new File("xswing.xml")),
+				SimpleFactoryConfig.class);
+		XSwingFactory.initInstanceWithConfig(factoryConfig);
+
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		TableConfig<Test> config = new TableConfig<Test>(Test.class);
 		config.setTableInstance("org.jdesktop.swingx.JXTable");
@@ -39,7 +45,6 @@ public class Examples extends JFrame {
 		setLocationRelativeTo(null);
 		SimpleLog.init();
 		setVisible(true);
-
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException,
@@ -59,6 +64,9 @@ public class Examples extends JFrame {
 					}
 					Examples e = new Examples();
 				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

@@ -7,6 +7,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -22,13 +24,14 @@ import javax.swing.table.TableRowSorter;
 
 import com.jovx.xswing.frame.ModeFrame;
 import com.jovx.xswing.model.EditorStore;
+import com.jovx.xswing.model.IModelInfoBuilder;
 import com.jovx.xswing.model.ModelConfig;
-import com.jovx.xswing.model.ModelInfoBuilder;
 
 public class JTablePanel<T> extends JPanel {
 	private BaseTableModel<T> baseTableModel;
 	protected JPopupMenu jPopupMenu;
 	private JTable jTable;
+	private Logger logger = Logger.getLogger("com.jovx.xswing.table");
 
 	public BaseTableModel<T> getBaseTableModel() {
 		return baseTableModel;
@@ -60,20 +63,26 @@ public class JTablePanel<T> extends JPanel {
 						.getConstructor(new Class[] { TableModel.class })
 						.newInstance(baseTableModel);
 			} catch (Throwable e) {
-				System.out.println("fail to init jtable with class " + clazz);
+				logger.log(Level.SEVERE, "fail to init jtable with class "
+						+ clazz);
 				jTable = new JTable(baseTableModel);
 			}
 		} else {
 			jTable = new JTable(baseTableModel);
 		}
-		for (Class key : EditorStore.maps.keySet()) {
-			jTable.setDefaultEditor(key, EditorStore.maps.get(key));
+		for (String key : EditorStore.maps.keySet()) {
+			try {
+				jTable.setDefaultEditor(Class.forName(key),
+						EditorStore.maps.get(key));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 
 		TableRowSorter sorter = new TableRowSorter(baseTableModel);
 		List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
 
-		ModelInfoBuilder<T> xx = baseTableModel.getModelInfoBuilder();
+		IModelInfoBuilder<T> xx = baseTableModel.getModelInfoBuilder();
 		List<ModelConfig> configs = xx.getColumnConfigs();
 		for (int i = 0; i < configs.size(); i++) {
 			if (configs.get(i).isEditable()) {
@@ -105,7 +114,7 @@ public class JTablePanel<T> extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					int[] rows = jTable.getSelectedRows();
 					baseTableModel.removeRows(rows);
-					System.out.println("delete");
+					logger.log(Level.FINE, "Delete");
 				}
 			});
 			JMenuItem detailRow = new JMenuItem("View");

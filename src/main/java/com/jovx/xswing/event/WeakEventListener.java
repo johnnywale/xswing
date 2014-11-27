@@ -11,14 +11,14 @@ public class WeakEventListener<T> implements EventListener<T> {
 	}
 
 	@Override
-	public void onEvent(T o) {
+	public void onEvent(T o, EventContext eventContext) {
 
 		if (reference == null) {
 			return;
 		}
 		EventListener<T> l = reference.get();
 		if (l != null) {
-			l.onEvent(o);
+			l.onEvent(o, eventContext);
 		} else {
 			reference = null;
 		}

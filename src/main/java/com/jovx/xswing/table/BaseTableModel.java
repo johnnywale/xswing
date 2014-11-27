@@ -8,21 +8,22 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import com.jovx.xswing.event.EventListener;
-import com.jovx.xswing.event.EventService;
+import com.jovx.xswing.event.IEventService;
 import com.jovx.xswing.event.ModelAddEvent;
 import com.jovx.xswing.event.ModelDeleteEvent;
 import com.jovx.xswing.event.ModelFieldValueChangedEvent;
 import com.jovx.xswing.factory.XSwingFactory;
-import com.jovx.xswing.model.ModelInfoBuilder;
+import com.jovx.xswing.model.IModelInfoBuilder;
+import com.jovx.xswing.model.ModelInfoFactory;
 
 public class BaseTableModel<T> extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	private List<T> datas = new ArrayList<T>();
-	private ModelInfoBuilder<T> modelInfoBuilder;
-	private EventService eventService = XSwingFactory.getInstance()
+	private IModelInfoBuilder<T> modelInfoBuilder;
+	private IEventService eventService = XSwingFactory.getInstance()
 			.findDefaultEventService();
 
-	public EventService getEventService() {
+	public IEventService getEventService() {
 		return eventService;
 	}
 
@@ -30,7 +31,7 @@ public class BaseTableModel<T> extends AbstractTableModel {
 		return datas;
 	}
 
-	public ModelInfoBuilder<T> getModelInfoBuilder() {
+	public IModelInfoBuilder<T> getModelInfoBuilder() {
 		return modelInfoBuilder;
 	}
 
@@ -83,10 +84,10 @@ public class BaseTableModel<T> extends AbstractTableModel {
 	}
 
 	public BaseTableModel(Class<T> clazz) {
-		modelInfoBuilder = new ModelInfoBuilder<T>(clazz);
+		modelInfoBuilder = ModelInfoFactory.forBuilder(clazz);
 	}
 
-	public BaseTableModel(ModelInfoBuilder<T> modelInfoBuilder) {
+	public BaseTableModel(IModelInfoBuilder<T> modelInfoBuilder) {
 		this.modelInfoBuilder = modelInfoBuilder;
 	}
 

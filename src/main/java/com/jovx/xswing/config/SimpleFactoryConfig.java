@@ -1,26 +1,42 @@
-package com.jovx.xswing.factory;
+package com.jovx.xswing.config;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class FactoryConfig {
-	private String persisEventListener;
-	private String eventLogListener;
+public class SimpleFactoryConfig implements IFactoryConfig {
+	private Map<String, String> configs = new HashMap<String, String>();
 
-	public String getPersisEventListener() {
-		return persisEventListener;
+	public Map<String, String> getConfigs() {
+		return configs;
 	}
 
-	public void setPersisEventListener(String persisEventListener) {
-		this.persisEventListener = persisEventListener;
+	public void setConfigs(Map<String, String> configs) {
+		this.configs = configs;
 	}
 
-	public String getEventLogListener() {
-		return eventLogListener;
+	public void addConfig(String key, String value) {
+		configs.put(key, value);
 	}
 
-	public void setEventLogListener(String eventLogListener) {
-		this.eventLogListener = eventLogListener;
+	@Override
+	public String getInstance(String key) {
+		return configs.get(key);
+	}
+
+	@Override
+	public <T> T getServiceConfig(String serviceName, String key) {
+		String x = configs.get(serviceName + "-" + key);
+		if (x != null) {
+			try {
+				return (T) Class.forName(x).newInstance();
+			} catch (Throwable e) {
+				new RuntimeException(e);
+			}
+		}
+		return null;
 	}
 
 }

@@ -10,16 +10,28 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.jovx.xswing.layout.KeyValueLayout;
+import com.jovx.xswing.model.IModelInfoBuilder;
 import com.jovx.xswing.model.ModelConfig;
-import com.jovx.xswing.model.ModelInfoBuilder;
+import com.jovx.xswing.model.ModelInfoFactory;
 
 public class ModelEditPanel<T> extends JPanel {
 	private JPanel dataPanel;
 	protected T instance;
-	private ModelInfoBuilder<T> modelInfoBuilder;
+	private IModelInfoBuilder<T> modelInfoBuilder;
+
+	public void setInstance(T instance) {
+		modelInfoBuilder = (IModelInfoBuilder<T>) ModelInfoFactory
+				.forBuilder(instance.getClass());
+		this.instance = instance;
+		setLayout(new BorderLayout());
+		dataPanel = new JPanel(new KeyValueLayout());
+		add(dataPanel, BorderLayout.CENTER);
+
+	}
 
 	/**
 	 * @return the instance
@@ -33,13 +45,7 @@ public class ModelEditPanel<T> extends JPanel {
 	}
 
 	public ModelEditPanel(final T instance) {
-		modelInfoBuilder = new ModelInfoBuilder<T>(
-				(Class<T>) instance.getClass());
-		this.instance = instance;
-		setLayout(new BorderLayout());
-		dataPanel = new JPanel(new KeyValueLayout());
-		add(dataPanel, BorderLayout.CENTER);
-
+		setInstance(instance);
 	}
 
 	@Override
@@ -56,14 +62,23 @@ public class ModelEditPanel<T> extends JPanel {
 
 	}
 
-	public JTextField addField(String x, Object value) {
-		Component label = new JLabel(x);
+	public JTextField addField(ModelConfig modelConfig, Object instance) {
+		Component label = new JLabel(modelConfig.getHeader());
 		FontMetrics xx = label.getFontMetrics(label.getFont());
-		int width = xx.stringWidth(x);
+		int width = xx.stringWidth(modelConfig.getHeader());
 		label.setPreferredSize(new Dimension(width, 30));
 		dataPanel.add(label);
+		Object value = modelConfig.getValue(instance);
 		String data = value == null ? "" : value.toString();
-		JTextField tt = new JTextField(data);
+		JTextField tt;
+
+		if (modelConfig.isProtect()) {
+			tt = new JPasswordField(data);
+		} else {
+			tt = new JTextField(data);
+
+		}
+		tt.setEditable(modelConfig.isEditable());
 		dataPanel.add(tt);
 		return tt;
 	}
@@ -71,11 +86,8 @@ public class ModelEditPanel<T> extends JPanel {
 	public void init() {
 		List<ModelConfig> configs = modelInfoBuilder.getColumnConfigs();
 		for (final ModelConfig modelConfig : configs) {
-			final JTextField editField = addField(modelConfig.getHeader(),
-					modelConfig.getValue(instance));
-			if (!modelConfig.isEditable()) {
-				editField.setEditable(false);
-			}
+			final JTextField editField = addField(modelConfig, instance);
+
 			editField.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyReleased(KeyEvent e) {

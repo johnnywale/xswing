@@ -1,16 +1,22 @@
 package com.jovx.xswing.model;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelInfoBuilder<T> {
+public class BeanModelInfoBuilder<T> implements IModelInfoBuilder<T> {
 
 	private List<ModelConfig> columnConfigs = new ArrayList<ModelConfig>();
 	private Class<T> modelType;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#invokeSet(java.lang.String,
+	 * java.lang.Object, T)
+	 */
+	@Override
 	public void invokeSet(String field, Object value, T instance) {
 		try {
 			getModelConfigByName(field).getSetMethod().invoke(instance, value);
@@ -19,6 +25,14 @@ public class ModelInfoBuilder<T> {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.jovx.xswing.model.IModelInfoBuilder#getModelConfigByName(java.lang
+	 * .String)
+	 */
+	@Override
 	public ModelConfig getModelConfigByName(String name) {
 		for (ModelConfig modelConfig : columnConfigs) {
 			if (modelConfig.getFieldName().equals(name)) {
@@ -28,14 +42,33 @@ public class ModelInfoBuilder<T> {
 		throw new RuntimeException("Fail to get config by field " + name);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getColumnConfigs()
+	 */
+	@Override
 	public List<ModelConfig> getColumnConfigs() {
 		return columnConfigs;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getModelType()
+	 */
+	@Override
 	public Class<T> getModelType() {
 		return modelType;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.jovx.xswing.model.IModelInfoBuilder#setModelType(java.lang.Class)
+	 */
+	@Override
 	public void setModelType(Class<T> modelType) {
 		this.modelType = modelType;
 	}
@@ -52,7 +85,7 @@ public class ModelInfoBuilder<T> {
 		return buf.toString();
 	}
 
-	public ModelInfoBuilder(Class<T> clazz) {
+	public BeanModelInfoBuilder(Class<T> clazz) {
 		modelType = clazz;
 		Field[] methods = modelType.getDeclaredFields();
 		Class parent = modelType.getSuperclass();
@@ -90,21 +123,22 @@ public class ModelInfoBuilder<T> {
 			try {
 				Method method = modelType.getDeclaredMethod(methodName);
 				if (method.isAnnotationPresent(ModelField.class)) {
-					ModelField dtoField = method
+					ModelField modelField = method
 							.getAnnotation(ModelField.class);
-					if (dtoField.ignore()) {
+					if (modelField.ignore()) {
 						continue;
 					}
 
-					String backEndField = dtoField.fieldName();
-					if (dtoField.fieldName().length() > 0) {
+					String backEndField = modelField.fieldName();
+					if (modelField.fieldName().length() > 0) {
 						columnConfig.setSort(backEndField);
 					} else {
 						columnConfig.setSort(name);
 					}
-					columnConfig.setRenderClazz(dtoField.renderClass());
-					columnConfig.setEditable(dtoField.editable());
-					columnConfig.setSortable(dtoField.sortable());
+					columnConfig.setRenderClazz(modelField.renderClass());
+					columnConfig.setEditable(modelField.editable());
+					columnConfig.setSortable(modelField.sortable());
+					columnConfig.setProtect(modelField.protect());
 
 				} else {
 					columnConfig.setEditable(true);
@@ -128,36 +162,84 @@ public class ModelInfoBuilder<T> {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getEditable(int)
+	 */
+	@Override
 	public boolean getEditable(int columnIndex) {
 		return columnConfigs.get(columnIndex).isEditable();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getGetMethod(int)
+	 */
+	@Override
 	public Method getGetMethod(int j) {
 		return columnConfigs.get(j).getGetMethod();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getSort(int)
+	 */
+	@Override
 	public String getSort(int i) {
 		return columnConfigs.get(i).getSort();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getHeader(int)
+	 */
+	@Override
 	public String getHeader(int i) {
 
 		return columnConfigs.get(i).getHeader();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getRenderClazz(int)
+	 */
+	@Override
 	public Class getRenderClazz(int i) {
 		return columnConfigs.get(i).getRenderClazz();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getSetMethod(int)
+	 */
+	@Override
 	public Method getSetMethod(int j) {
 		return columnConfigs.get(j).getSetMethod();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getColumnCount()
+	 */
+	@Override
 	public int getColumnCount() {
 
 		return columnConfigs.size();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jovx.xswing.model.IModelInfoBuilder#getFieldName(int)
+	 */
+	@Override
 	public String getFieldName(int j) {
 
 		return columnConfigs.get(j).getFieldName();

@@ -2,11 +2,17 @@ package com.jovx.xswing.event;
 
 import java.util.List;
 
-public class BaseModelSizeChangeEvent<T> implements ModelListener<T> {
+public class BaseModelSizeChangeEvent<T> extends AppEvent<T> implements
+		ModelListener<T> {
 	private List<T> originalList;
 	private List<T> changedList;
 	private List<T> currentList;
 	private Class<T> instanceClass;
+
+	@Override
+	public T getData() {
+		throw new RuntimeException("Not support");
+	}
 
 	public List<T> getChangedList() {
 		return changedList;

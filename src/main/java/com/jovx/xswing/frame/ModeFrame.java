@@ -8,21 +8,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import com.jovx.xswing.model.IModelInfoBuilder;
 import com.jovx.xswing.model.ModelConfig;
-import com.jovx.xswing.model.ModelInfoBuilder;
 
 public class ModeFrame<T> extends JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8980392522178325310L;
-	private ModelInfoBuilder<T> infoBuilder;
+	private IModelInfoBuilder<T> infoBuilder;
 	private T data;
 
-	public ModeFrame(T t, ModelInfoBuilder<T> infoBuilder) {
+	public ModeFrame(T t, IModelInfoBuilder<T> infoBuilder) {
 		data = t;
 		this.infoBuilder = infoBuilder;
-		TitledBorder titledBorder = new TitledBorder("deail");
+		TitledBorder titledBorder = new TitledBorder("Deail");
 		JPanel jPanel = new JPanel();
 		jPanel.setLayout(new VerticalFlowLayout(VerticalFlowLayout.MIDDLE, 20,
 				10));

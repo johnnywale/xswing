@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <factoryConfig>
-	<eventLogListener>com.jovx.xswing.persis.DefaultPersisEventListener
-	</eventLogListener>
-	<persisEventListener>com.jovx.xswing.persis.DefaultPersisEventListener
-	</persisEventListener>
+    <configs>
+        <entry>
+            <key>PERSIS</key>
+            <value>com.jovx.xswing.persis.DefaultPersisEventListener</value>
+        </entry>
+    </configs>
 </factoryConfig>

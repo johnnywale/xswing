@@ -13,10 +13,12 @@ public @interface ModelField {
 	public abstract String viewName() default "";
 
 	public abstract boolean editable() default true;
-	
+
 	public abstract boolean sortable() default true;
-	
+
 	public abstract boolean ignore() default false;
+
+	public abstract boolean protect() default false;
 
 	public abstract Class renderClass() default Object.class;
 }

@@ -1,41 +1,61 @@
 package com.jovx.xswing.factory;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jovx.xswing.config.IFactoryConfig;
+import com.jovx.xswing.event.EventContext;
 import com.jovx.xswing.event.EventListener;
-import com.jovx.xswing.event.EventService;
+import com.jovx.xswing.event.IEventService;
 import com.jovx.xswing.event.ModelAddEvent;
 import com.jovx.xswing.event.ModelDeleteEvent;
 import com.jovx.xswing.event.ModelFieldValueChangedEvent;
 import com.jovx.xswing.event.ModelFullUpdateEvent;
+import com.jovx.xswing.event.SimpleEventService;
 import com.jovx.xswing.persis.PersisEventListener;
-import com.jovx.xswing.util.JAXBXMLHandler;
 
 public class XSwingFactory {
 	private static XSwingFactory swingFactory;
-
-	public Map<String, EventService> listeners = new HashMap<String, EventService>();
+	private IFactoryConfig factoryConfig;
+	public Map<String, IEventService> listeners = new HashMap<String, IEventService>();
 	public static final String DEFAULT = "DEFAULT";
+
+	private XSwingFactory() {
+
+	}
+
+	public <T> T forInstance(String key) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
+		String value = factoryConfig.getInstance(key);
+		if (value != null) {
+			return (T) Class.forName(value).newInstance();
+		} else {
+			throw new RuntimeException("Could not get instance from config "
+					+ key);
+		}
+	}
 
 	private PersisEventListener persisEventListener;
 
-	public EventService findDefaultEventService() {
-		EventService eventService = findEventService(DEFAULT);
+	public IEventService findDefaultEventService() {
+		IEventService eventService = findEventService(DEFAULT);
 
 		return eventService;
 	}
 
-	public EventService findEventService(String key) {
-		EventService def = listeners.get(key);
+	public static final String EVENT_KEY = "EVENT";
+
+	public IEventService findEventService(String key) {
+
+		IEventService def = listeners.get(key);
 		if (def == null) {
-			def = new EventService();
+
+			def = factoryConfig.getServiceConfig(EVENT_KEY, key);
+			if (def == null) {
+				def = new SimpleEventService();
+			}
 			listeners.put(key, def);
 		}
 		return def;
@@ -43,20 +63,20 @@ public class XSwingFactory {
 
 	public static XSwingFactory getInstance() {
 		if (swingFactory == null) {
-			swingFactory = new XSwingFactory();
+			throw new RuntimeException("Should init with config");
 		}
 		return swingFactory;
 	}
 
-	public static void main(String[] args) throws IOException, Throwable {
+	public static XSwingFactory initInstanceWithConfig(
+			IFactoryConfig factoryConfig) throws Throwable {
+		if (swingFactory != null) {
+			throw new RuntimeException("Should init with config");
+		}
+		swingFactory = new XSwingFactory();
+		swingFactory.init(factoryConfig);
+		return swingFactory;
 
-		FactoryConfig factoryConfig = new FactoryConfig();
-		factoryConfig
-				.setEventLogListener("com.jovx.swing.persis.DefaultPersisEventListener");
-		factoryConfig
-				.setPersisEventListener("com.jovx.swing.persis.DefaultPersisEventListener");
-		JAXBXMLHandler.marshal(factoryConfig, new FileWriter(new File(
-				"xswing.xml")));
 	}
 
 	public static <T> void simpleAdd(T t) {
@@ -81,61 +101,58 @@ public class XSwingFactory {
 		getInstance().findDefaultEventService().fireEvent(addEvent);
 	}
 
-	public void initInstance(InputStream inputStream) {
-		try {
-			FactoryConfig factoryConfig = JAXBXMLHandler.unmarshal(inputStream,
-					FactoryConfig.class);
-			this.persisEventListener = (PersisEventListener) Class.forName(
-					factoryConfig.getPersisEventListener().trim())
-					.newInstance();
+	private static final String PERSIS_KEY = "PERSIS";
 
-			EventService defaultEventService = findDefaultEventService();
-			defaultEventService.register(ModelAddEvent.class,
-					new EventListener<ModelAddEvent>() {
+	private void init(IFactoryConfig factoryConfig) throws Throwable {
+		this.factoryConfig = factoryConfig;
+		this.persisEventListener = forInstance(PERSIS_KEY);
 
-						@Override
-						public void onEvent(ModelAddEvent o) {
-							persisEventListener.onModelAddEvent(o);
+		IEventService defaultEventService = findDefaultEventService();
+		defaultEventService.register(ModelAddEvent.class,
+				new EventListener<ModelAddEvent>() {
 
-						}
+					@Override
+					public void onEvent(ModelAddEvent o,
+							EventContext eventContext) {
+						persisEventListener.onModelAddEvent(o);
 
-					});
+					}
 
-			defaultEventService.register(ModelFieldValueChangedEvent.class,
-					new EventListener<ModelFieldValueChangedEvent>() {
+				});
 
-						@Override
-						public void onEvent(ModelFieldValueChangedEvent o) {
-							persisEventListener
-									.onModelFieldValueChangedEvent(o);
+		defaultEventService.register(ModelFieldValueChangedEvent.class,
+				new EventListener<ModelFieldValueChangedEvent>() {
 
-						}
+					@Override
+					public void onEvent(ModelFieldValueChangedEvent o,
+							EventContext eventContext) {
+						persisEventListener.onModelFieldValueChangedEvent(o);
 
-					});
-			defaultEventService.register(ModelDeleteEvent.class,
-					new EventListener<ModelDeleteEvent>() {
+					}
 
-						@Override
-						public void onEvent(ModelDeleteEvent o) {
-							persisEventListener.onModelDeleteEvent(o);
+				});
+		defaultEventService.register(ModelDeleteEvent.class,
+				new EventListener<ModelDeleteEvent>() {
 
-						}
+					@Override
+					public void onEvent(ModelDeleteEvent o,
+							EventContext eventContext) {
+						persisEventListener.onModelDeleteEvent(o);
 
-					});
-			defaultEventService.register(ModelFullUpdateEvent.class,
-					new EventListener<ModelFullUpdateEvent>() {
+					}
 
-						@Override
-						public void onEvent(ModelFullUpdateEvent o) {
-							persisEventListener.onModelFullUpdateEvent(o);
+				});
+		defaultEventService.register(ModelFullUpdateEvent.class,
+				new EventListener<ModelFullUpdateEvent>() {
 
-						}
+					@Override
+					public void onEvent(ModelFullUpdateEvent o,
+							EventContext eventContext) {
+						persisEventListener.onModelFullUpdateEvent(o);
 
-					});
+					}
 
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
-		}
+				});
 	}
 
 	public static <T> ModelDeleteEvent<T> getSimpleDeleteEvent(T x) {
@@ -147,4 +164,5 @@ public class XSwingFactory {
 		modelDeleteEvent.setChangedList(missionCells);
 		return modelDeleteEvent;
 	}
+
 }

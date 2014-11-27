@@ -11,6 +11,15 @@ public class ModelConfig {
 	private Class renderClazz;
 	private boolean editable = false;
 	private boolean sortable = true;
+	private boolean protect = false;
+
+	public boolean isProtect() {
+		return protect;
+	}
+
+	public void setProtect(boolean protect) {
+		this.protect = protect;
+	}
 
 	public boolean isSortable() {
 		return sortable;
