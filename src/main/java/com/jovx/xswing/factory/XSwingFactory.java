@@ -165,4 +165,12 @@ public class XSwingFactory {
 		return modelDeleteEvent;
 	}
 
+	public static IEventService fireDefault() {
+		return getInstance().findDefaultEventService();
+	}
+
+	public static void fireEvent(Object o) {
+		getInstance().findDefaultEventService().fireEvent(o);
+	}
+
 }

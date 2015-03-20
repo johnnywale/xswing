@@ -116,4 +116,64 @@ public class SimpleEventService extends
 
 	}
 
+	@Override
+	public <T> void onEvent(T o, EventContext eventContext) {
+
+		List<EventListener> eventListeners = new ArrayList<EventListener>();
+		Set<Class> classes = this.keySet();
+		for (Class clazz : classes) {
+			if (clazz.isAssignableFrom(o.getClass())) {
+				List<EventListener> lis = get(clazz);
+				for (EventListener eventListener : get(clazz)) {
+					try {
+
+						if (o instanceof AppEvent) {
+							AppEvent appEvent = (AppEvent) o;
+							eventContext.setEventAttribute(appEvent
+									.getEventAttribute());
+						}
+						eventListener.onEvent(o, eventContext);
+					} catch (GcException throwable) {
+						eventListeners.add(eventListener);
+					} catch (Throwable throwable) {
+						throwable.printStackTrace();
+						logger.log(Level.SEVERE, "error when public event");
+					}
+				}
+				lis.removeAll(eventListeners);
+				eventListeners.clear();
+
+			}
+		}
+	}
+
+	public void fireEvent(Object o, EventContext eventContext) {
+		List<EventListener> eventListeners = new ArrayList<EventListener>();
+		Set<Class> classes = this.keySet();
+		for (Class clazz : classes) {
+			if (clazz.isAssignableFrom(o.getClass())) {
+				List<EventListener> lis = get(clazz);
+				for (EventListener eventListener : get(clazz)) {
+					try {
+
+						if (o instanceof AppEvent) {
+							AppEvent appEvent = (AppEvent) o;
+							eventContext.setEventAttribute(appEvent
+									.getEventAttribute());
+						}
+						eventListener.onEvent(o, eventContext);
+					} catch (GcException throwable) {
+						eventListeners.add(eventListener);
+					} catch (Throwable throwable) {
+						throwable.printStackTrace();
+						logger.log(Level.SEVERE, "error when public event");
+					}
+				}
+				lis.removeAll(eventListeners);
+				eventListeners.clear();
+
+			}
+		}
+	}
+
 }
